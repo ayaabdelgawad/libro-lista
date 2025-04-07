@@ -15,19 +15,9 @@ There is also a pre-population script that will allow you to populate the databa
 mysql -u <user> -p < database/populate-db.sql
 ```
 
-## Starting up the Backend Server
-The backend runs on Python. To install the necessary packages, run
-```
-pip install -r backend/requirements.txt
-```
-To start up the backend in dev mode, run
-```
-FLASK_APP=server.py FLASK_ENV=development flask run
-```
+## Starting the Server
 
-## Starting the Frontend
-
-The frontend is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+The server is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ### Getting Started
 

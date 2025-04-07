@@ -21,7 +21,28 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  margin: 10px;
 }
+
+button {
+  background-color: #78a9c9;
+  color: white;
+  border-radius: calc(infinity * 1px);
+  padding-block: calc(var(--spacing) * 2.5);
+  padding-inline: calc(var(--spacing)* 5);
+  width: auto;
+  margin: 5px;
+}
+
+input {
+  border-radius: 5px;
+  border-color: grey;
+  border-width: 1px;
+  padding: 5px;
+  margin: 5px;
+  /* width: 100%; */
+}
+
 
 .libroLista {
   padding: 10px;
@@ -29,6 +50,9 @@ body {
   border-width: 1px;
   border-radius: 10px;
   margin: 15px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .title {
