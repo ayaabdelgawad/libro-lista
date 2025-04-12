@@ -20,6 +20,14 @@ mysql -u <user> -p < database/populate-db.sql
 The server is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ### Getting Started
+You'll need to provide the credentials to your database by creating a .env file in this directory and adding the following values (updating them as is appropriate):
+```
+DB_NAME = 'libro_lista'
+DB_HOST = 'localhost'
+DB_PORT = 3306
+DB_USER = 'root'
+DB_PASSWORD = '********'
+```
 
 First, run the development server:
 

@@ -1,15 +1,8 @@
 import mysql from  'mysql2/promise';
 import { NextResponse, NextRequest } from 'next/server'
+import { GetDBParams } from '@/next.config.mjs';
 
-// mySQL connection parameters
-// TODO: move this to .env file
-let connectionParams = {
-  host: 'localhost',
-  port: 3306,
-  user: 'username',
-  password: '********',
-  database: 'libro_lista'
-  }
+let connectionParams = GetDBParams();
 
 export async function GET(request) {
   try {
