@@ -5,12 +5,12 @@ Modal.setAppElement('#root');
 
 export default function LibroListaCard({lid, name, description, created_by, books, doRefresh}){
     const [modalIsOpen, setIsOpen] = useState(false);
-      function openModal() {
+    function openModal() {
         setIsOpen(true);
-      }
-      function closeModal() {
+    }
+    function closeModal() {
         setIsOpen(false);
-      }
+    }
     
     function editLista(formData) {
         const newName = formData.get("name");
@@ -44,8 +44,8 @@ export default function LibroListaCard({lid, name, description, created_by, book
             {books ? books.map(book => <BookCard key={book.name} name={book.name} author={book.author}/>) : null}
         </div>
         <div className="flex flex-col">
-            <button type="button" onClick={openModal}>Edit</button>
-            <button type="button" onClick={deleteLista}>Delete</button>
+            <button type="button" className="text-xs" onClick={openModal}>Edit</button>
+            <button type="button" className="text-xs" onClick={deleteLista}>Delete</button>
         </div>
         <Modal
             isOpen={modalIsOpen}
@@ -57,14 +57,14 @@ export default function LibroListaCard({lid, name, description, created_by, book
                 className="w-full"
                 type="text"
                 name="name"
-                placeholder={name}
+                defaultValue={name}
                 required />
             <label>Description</label>
             <input 
                 className="w-full"
                 type="text"
                 name="description"
-                placeholder={description} />
+                defaultValue={description} />
             <button type="submit">Submit</button>
             </form>
             <button className="text-black" onClick={closeModal}>Close</button>
