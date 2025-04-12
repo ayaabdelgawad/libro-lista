@@ -1,11 +1,9 @@
 import BookCard from "./BookCard"
-import { useEffect, useState } from 'react';
-import { useRouter } from "next/navigation"
+import { useState } from 'react';
 import Modal from 'react-modal';
 Modal.setAppElement('#root');
 
-export default function LibroListaCard({lid, name, description, created_by, books}){
-    const router = useRouter();
+export default function LibroListaCard({lid, name, description, created_by, books, doRefresh}){
     const [modalIsOpen, setIsOpen] = useState(false);
       function openModal() {
         setIsOpen(true);
@@ -24,8 +22,8 @@ export default function LibroListaCard({lid, name, description, created_by, book
             },
             body: JSON.stringify({ name: newName, description: newDescription, created_by})
         })
-        closeModal();
-        router.refresh();
+        .then(() => {closeModal()})
+        .then(() => {doRefresh()})
     }
     
     function deleteLista() {
@@ -35,7 +33,7 @@ export default function LibroListaCard({lid, name, description, created_by, book
                 'Content-Type': 'application/json'
             }
         })
-        .then(() => {router.refresh()})
+        .then(() => {doRefresh()})
     }
 
     return <div className="libroLista">

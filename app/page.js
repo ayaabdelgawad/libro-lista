@@ -18,12 +18,14 @@ export default function Home() {
     setIsOpen(false);
   }
 
+  const [refresh, setRefresh] = useState(false);
+
   async function addLista(formData) {
     const name = formData.get("name");
     const description = formData.get("description");
     const created_by = reader;
     const payload = {name, description, created_by};
-    const response = await fetch('/api/listas', {
+    await fetch('/api/listas', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -31,18 +33,17 @@ export default function Home() {
       body: JSON.stringify(payload)
     });
     closeModal();
-    // TODO: reload page so new lista shows up
+    setRefresh(!refresh);
   }
 
   useEffect(() => {
     fetch('/api/listas')
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setMyListas(data.filter((lista) => lista.created_by === reader));
         setOtherListas(data.filter((lista) => lista.created_by !== reader));
       });
-  }, []);
+  }, [refresh]);
 
   return (
     <div>
@@ -78,11 +79,27 @@ export default function Home() {
           </form>
           <button className="text-black" onClick={closeModal}>Close</button>
         </Modal>
-        {myListas.map(lista => <LibroListaCard key={lista.id} lid={lista.id} name={lista.name} description={lista.description} created_by={lista.created_by} />)}
+        {myListas.map(lista => 
+          <LibroListaCard 
+            key={lista.id} 
+            lid={lista.id} 
+            name={lista.name} 
+            description={lista.description} 
+            created_by={lista.created_by}
+            doRefresh={() => setRefresh(!refresh)} 
+          />)}
       </div>
       <div>
         <h2 className="text-2xl">All Listas</h2>
-        {otherListas.map(lista => <LibroListaCard key={lista.id} lid={lista.id} name={lista.name} description={lista.description} created_by={lista.created_by} />)}
+        {otherListas.map(lista => 
+          <LibroListaCard 
+            key={lista.id} 
+            lid={lista.id} 
+            name={lista.name} 
+            description={lista.description} 
+            created_by={lista.created_by} 
+            doRefresh={() => setRefresh(!refresh)}
+          />)}
       </div>
     </div>    
   )
