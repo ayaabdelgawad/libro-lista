@@ -10,9 +10,6 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema libro_lista
 -- -----------------------------------------------------
-/********************************************************
-* This script creates the database named libro_lista 
-*********************************************************/
 
 DROP DATABASE IF EXISTS libro_lista;
 CREATE DATABASE libro_lista;
@@ -33,18 +30,18 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `book`
+-- Table `libro`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `book` ;
+DROP TABLE IF EXISTS `libro` ;
 
-CREATE TABLE IF NOT EXISTS `book` (
+CREATE TABLE IF NOT EXISTS `libro` (
   `isbn` CHAR(13) NOT NULL,
   `title` VARCHAR(255) NOT NULL,
   `publication_date` DATE NULL,
   `author_id` INT NOT NULL,
   PRIMARY KEY (`isbn`),
-  INDEX `fk_book_author1_idx` (`author_id` ASC) VISIBLE,
-  CONSTRAINT `fk_book_author1`
+  INDEX `fk_libro_author1_idx` (`author_id` ASC) VISIBLE,
+  CONSTRAINT `fk_libro_author1`
     FOREIGN KEY (`author_id`)
     REFERENCES `author` (`id`)
     ON DELETE NO ACTION
@@ -74,14 +71,14 @@ CREATE TABLE IF NOT EXISTS `review` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `rating` INT UNSIGNED NOT NULL,
   `comments` TEXT NULL,
-  `book_isbn` CHAR(13) NOT NULL,
+  `libro_isbn` CHAR(13) NOT NULL,
   `reviewer` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_review_book1_idx` (`book_isbn` ASC) VISIBLE,
+  INDEX `fk_review_libro1_idx` (`libro_isbn` ASC) VISIBLE,
   INDEX `fk_review_reader1_idx` (`reviewer` ASC) VISIBLE,
-  CONSTRAINT `fk_review_book1`
-    FOREIGN KEY (`book_isbn`)
-    REFERENCES `book` (`isbn`)
+  CONSTRAINT `fk_review_libro1`
+    FOREIGN KEY (`libro_isbn`)
+    REFERENCES `libro` (`isbn`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_review_reader1`
@@ -143,22 +140,182 @@ DROP TABLE IF EXISTS `lista_content` ;
 
 CREATE TABLE IF NOT EXISTS `lista_content` (
   `lista_id` INT NOT NULL,
-  `book_isbn` CHAR(13) NOT NULL,
-  PRIMARY KEY (`lista_id`, `book_isbn`),
-  INDEX `fk_lista_has_book_book1_idx` (`book_isbn` ASC) VISIBLE,
-  INDEX `fk_lista_has_book_lista1_idx` (`lista_id` ASC) VISIBLE,
-  CONSTRAINT `fk_lista_has_book_lista1`
+  `libro_isbn` CHAR(13) NOT NULL,
+  PRIMARY KEY (`lista_id`, `libro_isbn`),
+  INDEX `fk_lista_has_libro_libro1_idx` (`libro_isbn` ASC) VISIBLE,
+  INDEX `fk_lista_has_libro_lista1_idx` (`lista_id` ASC) VISIBLE,
+  CONSTRAINT `fk_lista_has_libro_lista1`
     FOREIGN KEY (`lista_id`)
     REFERENCES `lista` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_lista_has_book_book1`
-    FOREIGN KEY (`book_isbn`)
-    REFERENCES `book` (`isbn`)
+  CONSTRAINT `fk_lista_has_libro_libro1`
+    FOREIGN KEY (`libro_isbn`)
+    REFERENCES `libro` (`isbn`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- View `libro_y_escritor`
+-- -----------------------------------------------------
+DROP VIEW IF EXISTS `libro_y_escritor` ;
+
+CREATE VIEW IF NOT EXISTS `libro_y_escritor` AS 
+  SELECT isbn, title, publication_date, name as author_name 
+  FROM libro
+  INNER JOIN author
+  ON libro.author_id = author.id;
+
+DELIMITER $$
+
+-- -----------------------------------------------------
+-- Function `get_author_id_by_name`
+-- returns id if author exists, NULL otherwise
+-- -----------------------------------------------------
+DROP FUNCTION IF EXISTS `get_author_id_by_name` ;
+
+CREATE FUNCTION get_author_id_by_name(p_author_name VARCHAR(255))
+RETURNS INT
+DETERMINISTIC
+READS SQL DATA
+BEGIN
+    DECLARE v_author_id INT;
+
+    SELECT id INTO v_author_id
+    FROM author
+    WHERE name = p_author_name
+    LIMIT 1;
+
+    RETURN v_author_id;
+END $$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- Procedure `insert_libro_con_escritor`
+-- (for inserts into `libro` and `author`, if needed)
+-- -----------------------------------------------------
+DROP PROCEDURE IF EXISTS `insert_libro_con_escritor` ;
+
+DELIMITER $$
+
+CREATE PROCEDURE IF NOT EXISTS `insert_libro_con_escritor` (
+    IN p_isbn CHAR(13),
+    IN p_title VARCHAR(255),
+    IN p_publication_date DATE,
+    IN p_author_name VARCHAR(255)
+)
+BEGIN
+    DECLARE v_author_id INT;
+
+    SET v_author_id = get_author_id_by_name(p_author_name);
+
+    -- If the author was not found, insert a new one
+    IF v_author_id IS NULL THEN
+        INSERT INTO author (name)
+        VALUES (p_author_name);
+
+        -- Get the new author's ID
+        SET v_author_id = LAST_INSERT_ID();
+    END IF;
+
+    INSERT INTO libro (isbn, title, publication_date, author_id)
+    VALUES (p_isbn, p_title, p_publication_date, v_author_id);
+END $$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- Procedure `update_libro_con_escritor`
+-- (for updates on `libro` and `author`, if needed)
+-- -----------------------------------------------------
+DROP PROCEDURE IF EXISTS `update_libro_con_escritor` ;
+
+DELIMITER $$
+
+CREATE PROCEDURE `update_libro_con_escritor` (
+    IN p_isbn CHAR(13),
+    IN p_title VARCHAR(255),
+    IN p_publication_date DATE,
+    IN p_author_name VARCHAR(255)
+)
+BEGIN
+    DECLARE v_author_id INT;
+
+    SET v_author_id = get_author_id_by_name(p_author_name);
+
+    -- If the author doesn't exist, insert and get the new id
+    IF v_author_id IS NULL THEN
+        INSERT INTO author (name)
+        VALUES (p_author_name);
+        SET v_author_id = LAST_INSERT_ID();
+    END IF;
+
+    UPDATE libro
+    SET
+        title = p_title,
+        publication_date = p_publication_date,
+        author_id = v_author_id
+    WHERE isbn = p_isbn;
+END $$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- Procedure `update_reader` to update reader row
+-- while preventing from taking another user's username
+-- -----------------------------------------------------
+DROP PROCEDURE IF EXISTS `update_reader` ;
+DELIMITER $$
+
+CREATE PROCEDURE `update_reader` (
+    IN p_old_username VARCHAR(255),
+    IN p_new_username VARCHAR(255),
+    IN p_pw_hash CHAR(31),
+    IN p_salt CHAR(22)
+)
+BEGIN
+    DECLARE user_exists INT;
+
+    -- Check if the new username already exists
+    SELECT COUNT(*) INTO user_exists
+    FROM reader
+    WHERE username = p_new_username;
+
+    IF user_exists > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Username already taken';
+    ELSE
+        UPDATE reader
+        SET 
+            username = p_new_username,
+            pw_hash = p_pw_hash,
+            salt = p_salt
+        WHERE username = p_old_username;
+    END IF;
+END $$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- Trigger `after_lista_insert`
+-- (for auto-inserts into `lista_followings`)
+-- -----------------------------------------------------
+
+DROP TRIGGER IF EXISTS `after_lista_insert` ;
+
+DELIMITER $$
+
+CREATE TRIGGER IF NOT EXISTS `after_lista_insert`
+AFTER INSERT ON lista
+FOR EACH ROW
+BEGIN
+  INSERT INTO lista_followings (lista_id, reader_username)
+  VALUES (NEW.id, NEW.created_by);
+END $$
+
+DELIMITER ;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

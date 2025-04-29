@@ -31,9 +31,9 @@ INSERT INTO author (name, main_genre) VALUES
 
 
 -- -----------------------------------------------------
--- Populate `book` table
+-- Populate `libro` table
 -- -----------------------------------------------------
-INSERT INTO book (title, isbn, author_id, publication_date) VALUES
+INSERT INTO libro (title, isbn, author_id, publication_date) VALUES
 ('Fahrenheit 451', '9780345410016', 1, '1996-01-01'),
 ('The Great Gatsby', '9780743246392', 2, '2003-05-27'),
 ('The Catcher in the Rye', '9780316460002', 3, '2019-08-13'),
