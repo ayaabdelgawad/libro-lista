@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import LibroListaCard from "./components/LibroListaCard";
 import Modal from 'react-modal';
 Modal.setAppElement('#root');
@@ -19,6 +20,8 @@ export default function Home() {
   }
 
   const [refresh, setRefresh] = useState(false);
+
+  const router = useRouter();
 
   async function addLista(formData) {
     const name = formData.get("name");
@@ -80,26 +83,36 @@ export default function Home() {
           <button className="text-black" onClick={closeModal}>Close</button>
         </Modal>
         {myListas.map(lista => 
-          <LibroListaCard 
+          <div 
             key={lista.id} 
-            lid={lista.id} 
-            name={lista.name} 
-            description={lista.description} 
-            created_by={lista.created_by}
-            doRefresh={() => setRefresh(!refresh)} 
-          />)}
+            onClick={() => router.push(`/listas/${lista.id}`)}
+          >
+            <LibroListaCard 
+              lid={lista.id} 
+              name={lista.name} 
+              description={lista.description} 
+              created_by={lista.created_by}
+              doRefresh={() => setRefresh(!refresh)} 
+            />
+          </div>
+        )}
       </div>
       <div>
         <h2 className="text-2xl">All Listas</h2>
         {otherListas.map(lista => 
-          <LibroListaCard 
+          <div 
             key={lista.id} 
-            lid={lista.id} 
-            name={lista.name} 
-            description={lista.description} 
-            created_by={lista.created_by} 
-            doRefresh={() => setRefresh(!refresh)}
-          />)}
+            onClick={() => router.push(`/listas/${lista.id}`)}
+          >
+            <LibroListaCard 
+              lid={lista.id} 
+              name={lista.name} 
+              description={lista.description} 
+              created_by={lista.created_by} 
+              doRefresh={() => setRefresh(!refresh)}
+            />
+          </div>
+        )}
       </div>
     </div>    
   )

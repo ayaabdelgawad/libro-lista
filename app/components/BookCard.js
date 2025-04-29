@@ -1,7 +1,55 @@
-export default function BookCard({name, author}){
-    return <div className="bookCard">
-        <p className="subtitle">{name}</p>
-        <p>By {author}</p>
-        <button type="button" className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Review</button>
+import { useEffect, useState } from 'react'
+import Modal from 'react-modal';
+import Rating from '@mui/material/Rating';
+Modal.setAppElement('#root');
+
+export default function BookCard({title, author}){
+    const [modalIsOpen, setIsOpen] = useState(false);
+    const [rating, setRating] = useState(1);
+    function openModal() {
+        setIsOpen(true);
+    }
+    function closeModal() {
+        setIsOpen(false);
+    }
+
+    async function addReview(formData){
+        const comments = formData.get("comments");
+        payload = {rating, comments};
+        await fetch('/api/reviews', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+          closeModal();
+    }
+
+    
+    return (
+    <div>
+        <Modal
+            isOpen={modalIsOpen}
+            onRequestClose={closeModal}
+        >
+        <form className="text-black" action={addReview}>
+            <Rating
+                name="rating"
+                value={rating}
+                onChange={(event, newValue) => {setRating(newValue);}}
+            />
+            <label>Review</label>
+            <input name="comments"></input>
+            <button type="submit">Submit</button>
+        </form>
+        <button className="text-black" onClick={closeModal}>Close</button>
+        </Modal>
+        <div className="bookCard">
+            <p className="subtitle">{title}</p>
+            <p>By {author}</p>
+            <button type="button" onClick={openModal}>Review</button>
+        </div>
     </div>
+    )
 }
