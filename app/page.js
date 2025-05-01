@@ -7,10 +7,25 @@ import Modal from 'react-modal';
 Modal.setAppElement('#root');
 
 export default function Home() {
-  const reader = 'reader1';
+
+  const router = useRouter();
+  
+  const [reader, setReader] = useState('');
   const [myListas, setMyListas] = useState([]);
   const [otherListas, setOtherListas] = useState([]);
   
+  useEffect(() => {
+    const cookies = document.cookie;
+    const match = cookies.match(/username=([^;]+)/);
+    const username = match ? match[1] : null;
+    
+    if (!username){
+      router.push('/login');
+    } else {
+      setReader(username);
+    }
+  }, []);
+
   const [modalIsOpen, setIsOpen] = useState(false);
   function openModal() {
     setIsOpen(true);
@@ -21,7 +36,6 @@ export default function Home() {
 
   const [refresh, setRefresh] = useState(false);
 
-  const router = useRouter();
 
   async function addLista(formData) {
     const name = formData.get("name");

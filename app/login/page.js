@@ -1,10 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import bcrypt from 'bcryptjs';
 
 const SALT_ROUNDS = 10;
 
 export default function Page(){
+    const router = useRouter();
     const [refresh, setRefresh] = useState(false);
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
@@ -16,25 +18,39 @@ export default function Page(){
           .then((data) => {setReaders(data)});
       }, [refresh]);
 
-
     async function doLogin() {
-        //COME BACK TO THIS
+        const payload = {username, password};
+        fetch('api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        }).then(res => res.json()).then((data) => {
+            if(data.success){
+                router.push(data.redirectTo);
+            }
+        })
     }
 
     async function doSignUp() {
-        if (readers.filter((reader) => reader.username === username)) {
-            alert("The username you have chose is already taken");
-        } else {
-            
-            
+        const matchingUsernames = readers.filter((reader) => reader.username === username)
+        if (matchingUsernames.length > 0) {
+            alert("The username you have chosen is already taken");
+            console.log(matchingUsernames)
+        } else {            
             bcrypt.hash(password, SALT_ROUNDS).then((hash) => {
                 const payload = {username, pw_hash: hash.slice(-31), salt: hash.slice(-53, -31)};
-                fetch('/api/readers', {
+                fetch('/api/auth/signup', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(payload)
+                }).then(res => res.json()).then((data) => {
+                    if(data.success){
+                        router.push(data.redirectTo);
+                    }
                 });
             })
         }
@@ -43,6 +59,7 @@ export default function Page(){
 
     return (
         <div>
+        <form>
             <label>Username</label>
             <input 
                 type="text"
@@ -57,6 +74,7 @@ export default function Page(){
                     setPassword(event.target.value);
                 }}
             ></input>
+        </form>
             <button onClick={doLogin}>Login</button>
             <button onClick={doSignUp}>Sign Up</button>
         </div>
