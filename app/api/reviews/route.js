@@ -7,9 +7,8 @@ let connectionParams = GetDBParams();
 export async function GET(request) {
   try {
     const connection = await mysql.createConnection(connectionParams);
-    // TODO: select from view that is join of libro and author
     const selectQuery = `
-        SELECT id, rating, comments, libro_isbn, reviewer
+        SELECT id, reviewed_at, rating, comments, libro_isbn, reviewer
         FROM review
     `;
     const [readers] = await connection.query(selectQuery);
