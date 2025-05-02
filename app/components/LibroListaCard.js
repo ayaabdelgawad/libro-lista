@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Modal from 'react-modal';
 Modal.setAppElement('#root');
 
-export default function LibroListaCard({lid, name, description, created_by, books, doRefresh}){
+export default function LibroListaCard({lid, name, description, created_by, books, following, doRefresh}){
     const [modalIsOpen, setIsOpen] = useState(false);
     function openModal() {
         setIsOpen(true);
@@ -44,6 +44,11 @@ export default function LibroListaCard({lid, name, description, created_by, book
             {books ? books.map(book => <BookCard key={book.name} name={book.name} author={book.author}/>) : null}
         </div>
         <div className="flex flex-col">
+            {following ? 
+                <button className="text-xs accent">Unfollow</button>
+                :
+                <button type="button" className="text-xs" onClick={deleteLista}>Follow</button>
+            }
             <button type="button" className="text-xs" onClick={openModal}>Edit</button>
             <button type="button" className="text-xs" onClick={deleteLista}>Delete</button>
         </div>

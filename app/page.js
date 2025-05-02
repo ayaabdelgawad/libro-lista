@@ -11,6 +11,7 @@ export default function Home() {
   const router = useRouter();
   
   const [reader, setReader] = useState('');
+  const [myFollowingIds, setMyFollowingIds] = useState([]);
   const [myListas, setMyListas] = useState([]);
   const [otherListas, setOtherListas] = useState([]);
   
@@ -60,7 +61,16 @@ export default function Home() {
         setMyListas(data.filter((lista) => lista.created_by === reader));
         setOtherListas(data.filter((lista) => lista.created_by !== reader));
       });
-  }, [refresh]);
+    
+    fetch('/api/lista-followings')
+      .then((response) => response.json())
+      .then((data) => {
+        setMyFollowingIds(
+          data
+            .filter((following) => following.reader_username === reader)
+            .map((following) => following.lista_id));
+      })
+  }, [refresh, reader]);
 
   return (
     <div>
@@ -106,6 +116,7 @@ export default function Home() {
               name={lista.name} 
               description={lista.description} 
               created_by={lista.created_by}
+              following={true}
               doRefresh={() => setRefresh(!refresh)} 
             />
           </div>
@@ -122,7 +133,8 @@ export default function Home() {
               lid={lista.id} 
               name={lista.name} 
               description={lista.description} 
-              created_by={lista.created_by} 
+              created_by={lista.created_by}
+              following={myFollowingIds.includes(lista.id)}
               doRefresh={() => setRefresh(!refresh)}
             />
           </div>

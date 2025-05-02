@@ -29,10 +29,10 @@ export async function POST(req) {
                 response.headers.set('Set-Cookie', cookie);
                 return response;
             } else {
-                return NextResponse.status(401).json({ error: 'Invalid credentials.' }) 
+                return NextResponse.json({ error: 'Invalid credentials.' }, {status: 401}) 
             }
         } else {
-            return NextResponse.status(401).json({ error: 'Invalid credentials.' }) 
+            return NextResponse.json({ error: 'Invalid credentials.' }, {status: 401}) 
         }
     } catch (error) {
         console.error('Error fetching data from MySQL:', error);

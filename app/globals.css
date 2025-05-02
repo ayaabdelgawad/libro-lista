@@ -9,6 +9,7 @@
   --background: #ffffff;
   --foreground: #171717;
   --accent: #78a9c9;
+  --accent2: #b8c3ca;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -29,6 +30,18 @@ button {
   background-color: var(--accent);
   color: var(--foreground);
   border-radius: calc(infinity * 1px);
+  padding-block: calc(var(--spacing) * 2.5);
+  padding-inline: calc(var(--spacing)* 5);
+  width: auto;
+  margin: 5px;
+}
+
+button.accent {
+  background-color: var(--background);
+  color: var(--foreground);
+  border-radius: calc(infinity * 1px);
+  border-width: 2px;
+  border-color: var(--accent);
   padding-block: calc(var(--spacing) * 2.5);
   padding-inline: calc(var(--spacing)* 5);
   width: auto;
