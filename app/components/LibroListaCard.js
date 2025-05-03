@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Modal from 'react-modal';
 Modal.setAppElement('#root');
 
-export default function LibroListaCard({lid, name, description, created_by, books, following, doRefresh}){
+export default function LibroListaCard({lid, name, description, created_by, books, following, reader, doRefresh}){
     const [modalIsOpen, setIsOpen] = useState(false);
     function openModal() {
         setIsOpen(true);
@@ -12,7 +12,7 @@ export default function LibroListaCard({lid, name, description, created_by, book
         setIsOpen(false);
     }
     
-    function editLista(formData) {
+    async function editLista(formData) {
         const newName = formData.get("name");
         const newDescription = formData.get("description");
         fetch(`/api/listas/${lid}`, {
@@ -26,7 +26,7 @@ export default function LibroListaCard({lid, name, description, created_by, book
         .then(() => {doRefresh()})
     }
     
-    function deleteLista() {
+    async function deleteLista() {
         fetch(`/api/listas/${lid}`, {
             method: 'DELETE',
             headers: {
@@ -34,6 +34,26 @@ export default function LibroListaCard({lid, name, description, created_by, book
             }
         })
         .then(() => {doRefresh()})
+    }
+
+    async function doFollow() {
+        const payload = {lista_id: lid, reader_username: reader}
+        fetch('/api/lista-followings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        }).then(() => {doRefresh()})
+    }
+
+    async function doUnfollow() {
+        fetch(`api/lista-followings/${lid}/${reader}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(() => {doRefresh()})
     }
 
     return <div className="libroLista">
@@ -44,11 +64,16 @@ export default function LibroListaCard({lid, name, description, created_by, book
             {books ? books.map(book => <BookCard key={book.name} name={book.name} author={book.author}/>) : null}
         </div>
         <div className="flex flex-col">
-            {following ? 
-                <button className="text-xs accent">Unfollow</button>
-                :
-                <button type="button" className="text-xs" onClick={deleteLista}>Follow</button>
-            }
+            <button 
+                type="button" 
+                className={following ? "text-xs accent" : "text-xs"}
+                onClick={(event) => {
+                    event.stopPropagation();
+                    following ? doUnfollow() : doFollow();
+                }}
+            >
+                {following ? "Unfollow" : "Follow"}
+            </button>
             <button type="button" className="text-xs" onClick={openModal}>Edit</button>
             <button type="button" className="text-xs" onClick={deleteLista}>Delete</button>
         </div>

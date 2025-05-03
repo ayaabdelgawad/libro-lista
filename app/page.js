@@ -9,18 +9,18 @@ Modal.setAppElement('#root');
 export default function Home() {
 
   const router = useRouter();
-  
+
   const [reader, setReader] = useState('');
   const [myFollowingIds, setMyFollowingIds] = useState([]);
   const [myListas, setMyListas] = useState([]);
   const [otherListas, setOtherListas] = useState([]);
-  
+
   useEffect(() => {
     const cookies = document.cookie;
     const match = cookies.match(/username=([^;]+)/);
     const username = match ? match[1] : null;
-    
-    if (!username){
+
+    if (!username) {
       router.push('/login');
     } else {
       setReader(username);
@@ -42,7 +42,7 @@ export default function Home() {
     const name = formData.get("name");
     const description = formData.get("description");
     const created_by = reader;
-    const payload = {name, description, created_by};
+    const payload = { name, description, created_by };
     await fetch('/api/listas', {
       method: 'POST',
       headers: {
@@ -61,7 +61,7 @@ export default function Home() {
         setMyListas(data.filter((lista) => lista.created_by === reader));
         setOtherListas(data.filter((lista) => lista.created_by !== reader));
       });
-    
+
     fetch('/api/lista-followings')
       .then((response) => response.json())
       .then((data) => {
@@ -76,10 +76,10 @@ export default function Home() {
     <div>
       <h1 className="text-4xl">Welcome, <b>{reader}</b>!</h1>
       <div>
-        <div className="flex row" style={{justifyContent: "space-between"}}>
+        <div className="flex row" style={{ justifyContent: "space-between" }}>
           <h2 className="text-2xl">My Listas</h2>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             onClick={openModal}
           >+</button>
@@ -97,7 +97,7 @@ export default function Home() {
               placeholder="Name"
               required />
             <label>Description</label>
-            <input 
+            <input
               className="w-full"
               type="text"
               name="description"
@@ -106,40 +106,42 @@ export default function Home() {
           </form>
           <button className="text-black" onClick={closeModal}>Close</button>
         </Modal>
-        {myListas.map(lista => 
-          <div 
-            key={lista.id} 
+        {myListas.map(lista =>
+          <div
+            key={lista.id}
             onClick={() => router.push(`/listas/${lista.id}`)}
           >
-            <LibroListaCard 
-              lid={lista.id} 
-              name={lista.name} 
-              description={lista.description} 
+            <LibroListaCard
+              lid={lista.id}
+              name={lista.name}
+              description={lista.description}
               created_by={lista.created_by}
-              following={true}
-              doRefresh={() => setRefresh(!refresh)} 
+              following={myFollowingIds.includes(lista.id)}
+              reader={reader}
+              doRefresh={() => setRefresh(!refresh)}
             />
           </div>
         )}
       </div>
       <div>
         <h2 className="text-2xl">All Listas</h2>
-        {otherListas.map(lista => 
-          <div 
-            key={lista.id} 
+        {otherListas.map(lista =>
+          <div
+            key={lista.id}
             onClick={() => router.push(`/listas/${lista.id}`)}
           >
-            <LibroListaCard 
-              lid={lista.id} 
-              name={lista.name} 
-              description={lista.description} 
+            <LibroListaCard
+              lid={lista.id}
+              name={lista.name}
+              description={lista.description}
               created_by={lista.created_by}
               following={myFollowingIds.includes(lista.id)}
+              reader={reader}
               doRefresh={() => setRefresh(!refresh)}
             />
           </div>
         )}
       </div>
-    </div>    
+    </div>
   )
 }
