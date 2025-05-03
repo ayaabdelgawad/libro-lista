@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS `libro` (
   CONSTRAINT `fk_libro_author1`
     FOREIGN KEY (`author_id`)
     REFERENCES `author` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -80,13 +80,13 @@ CREATE TABLE IF NOT EXISTS `review` (
   CONSTRAINT `fk_review_libro1`
     FOREIGN KEY (`libro_isbn`)
     REFERENCES `libro` (`isbn`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_review_reader1`
     FOREIGN KEY (`reviewer`)
     REFERENCES `reader` (`username`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -105,8 +105,8 @@ CREATE TABLE IF NOT EXISTS `lista` (
   CONSTRAINT `fk_lista_reader1`
     FOREIGN KEY (`created_by`)
     REFERENCES `reader` (`username`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -124,13 +124,13 @@ CREATE TABLE IF NOT EXISTS `lista_followings` (
   CONSTRAINT `fk_lista_has_reader_lista1`
     FOREIGN KEY (`lista_id`)
     REFERENCES `lista` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_lista_has_reader_reader1`
     FOREIGN KEY (`reader_username`)
     REFERENCES `reader` (`username`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -148,13 +148,13 @@ CREATE TABLE IF NOT EXISTS `lista_content` (
   CONSTRAINT `fk_lista_has_libro_lista1`
     FOREIGN KEY (`lista_id`)
     REFERENCES `lista` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_lista_has_libro_libro1`
     FOREIGN KEY (`libro_isbn`)
     REFERENCES `libro` (`isbn`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
