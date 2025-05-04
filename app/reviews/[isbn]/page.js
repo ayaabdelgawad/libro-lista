@@ -32,7 +32,7 @@ export default function Page() {
                 setTitle(curLibro.title);
                 setAuthor(curLibro.author_name);
             })
-    }, [refresh]);
+    }, []);
 
     useEffect(() => {
         fetch('/api/reviews')
