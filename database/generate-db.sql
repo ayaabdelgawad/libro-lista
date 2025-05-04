@@ -216,7 +216,7 @@ CREATE PROCEDURE IF NOT EXISTS `insert_libro_con_escritor` (
 BEGIN
     DECLARE v_author_id INT;
 
-    SET v_author_id = get_author_id_by_name(p_author_name, p_publication_date);
+    SET v_author_id = get_author_id_by_name_and_date(p_author_name, p_publication_date);
 
     -- If the author was not found, insert a new one
     IF v_author_id IS NULL THEN
@@ -250,7 +250,7 @@ CREATE PROCEDURE `update_libro_con_escritor` (
 BEGIN
     DECLARE v_author_id INT;
 
-    SET v_author_id = get_author_id_by_name(p_author_name);
+    SET v_author_id = get_author_id_by_name_and_date(p_author_name, p_publication_date);
 
     -- If the author doesn't exist, insert and get the new id
     IF v_author_id IS NULL THEN
@@ -291,3 +291,5 @@ DELIMITER ;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+SET GLOBAL TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+
