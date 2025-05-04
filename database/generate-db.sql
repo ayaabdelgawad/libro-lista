@@ -23,9 +23,9 @@ DROP TABLE IF EXISTS `author` ;
 CREATE TABLE IF NOT EXISTS `author` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
+  `birthdate` DATE NOT NULL,
   `main_genre` VARCHAR(255) NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE)
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
@@ -37,7 +37,7 @@ DROP TABLE IF EXISTS `libro` ;
 CREATE TABLE IF NOT EXISTS `libro` (
   `isbn` CHAR(13) NOT NULL,
   `title` VARCHAR(255) NOT NULL,
-  `publication_date` DATE NULL,
+  `publication_date` DATE NOT NULL,
   `author_id` INT NOT NULL,
   PRIMARY KEY (`isbn`),
   INDEX `fk_libro_author1_idx` (`author_id` ASC) VISIBLE,
