@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import LibroListaCard from "./components/LibroListaCard";
+import NavBar from "./components/NavBar";
 import Modal from 'react-modal';
 Modal.setAppElement('#root');
 
@@ -74,6 +75,7 @@ export default function Home() {
 
   return (
     <div>
+      <NavBar/>
       <h1 className="text-4xl">Welcome, <b>{reader}</b>!</h1>
       <div>
         <div className="flex row" style={{ justifyContent: "space-between" }}>

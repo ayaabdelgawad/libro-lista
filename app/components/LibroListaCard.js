@@ -74,8 +74,14 @@ export default function LibroListaCard({lid, name, description, created_by, book
             >
                 {following ? "Unfollow" : "Follow"}
             </button>
-            <button type="button" className="text-xs" onClick={openModal}>Edit</button>
-            <button type="button" className="text-xs" onClick={deleteLista}>Delete</button>
+            { created_by === reader ?
+                <div>
+                    <button type="button" className="text-xs" onClick={openModal}>Edit</button>
+                    <button type="button" className="text-xs" onClick={deleteLista}>Delete</button>
+                </div>
+                :
+                null
+            }
         </div>
         <Modal
             isOpen={modalIsOpen}
