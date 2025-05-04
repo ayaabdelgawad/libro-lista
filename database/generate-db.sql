@@ -168,13 +168,13 @@ CREATE VIEW IF NOT EXISTS `libro_y_escritor` AS
   INNER JOIN author
   ON libro.author_id = author.id;
 
-DELIMITER $$
-
 -- -----------------------------------------------------
 -- Function `get_author_id_by_name`
 -- returns id if author exists, NULL otherwise
 -- -----------------------------------------------------
 DROP FUNCTION IF EXISTS `get_author_id_by_name` ;
+
+DELIMITER $$
 
 CREATE FUNCTION get_author_id_by_name(p_author_name VARCHAR(255))
 RETURNS INT

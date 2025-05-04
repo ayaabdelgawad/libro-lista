@@ -60,4 +60,4 @@ INSERT INTO libro (title, isbn, author_id, publication_date) VALUES
 -- Populate `reader` table with dummy user
 -- -----------------------------------------------------
 INSERT INTO reader (username, pw_hash, salt) VALUES
-('reader1', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 'BBBBBBBBBBBBBBBBBBBBBB');
+('reader1', 'hBENA8A.hfd8s4XujJuwrYmUUL26XLy', '9rTcHCI71Pw1PRYvMBMbbO'); -- pwd is 1234
