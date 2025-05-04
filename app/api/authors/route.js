@@ -22,14 +22,16 @@ export async function GET(request) {
 
 export async function POST(request) {
     try {
-        const libro = await request.json();
+        const author = await request.json();
         const connection = await mysql.createConnection(connectionParams);
-        const insertQuery = `CALL insert_libro_con_escritor(?, ?, ?, ?)`;
-        const [libros] = await connection.query(
+        const insertQuery = `INSERT INTO 
+          author(name, main_genre) 
+          VALUES(?, ?)`;
+        const [authors] = await connection.query(
             insertQuery,
-            [libro.isbn, libro.title, libro.publication_date, libro.author_name]);
+            [author.name, author.main_genre]);
         connection.end();
-        return NextResponse.json({ newAuthorId: libros?.insertId });
+        return NextResponse.json({ newAuthorId: authors?.insertId });
     } catch (error) {
         console.error('Error fetching data from MySQL:', error);
         return NextResponse.json({ error: 'Failed to fetch data' }, { status: 500 });

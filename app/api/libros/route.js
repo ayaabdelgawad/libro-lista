@@ -25,7 +25,6 @@ export async function POST(request) {
     try {
         const libro = await request.json();
         const connection = await mysql.createConnection(connectionParams);
-        // select from view that is join of libro and author
         const insertQuery = `CALL insert_libro_con_escritor(?, ?, ?, ?)`;
         const [libros] = await connection.query(
             insertQuery,
