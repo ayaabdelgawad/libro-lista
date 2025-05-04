@@ -16,8 +16,7 @@ export default function Page() {
   const [allLibros, setAllLibros] = useState([]);
   const [allAuthors, setAllAuthors] = useState([]);
 
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [curLista, setCurLista] = useState({});
 
   const [checked, setChecked] = useState(true);
   const [modalIsOpen, setIsOpen] = useState(false);
@@ -79,8 +78,7 @@ export default function Page() {
       .then((response) => response.json())
       .then((data) => {
         const thisLista = data.find((lista) => lista.id == params.lid);
-        setName(thisLista.name);
-        setDescription(thisLista.description);
+        setCurLista(thisLista);
       });
     fetch('/api/lista-content')
       .then((response) => response.json())
@@ -148,14 +146,19 @@ export default function Page() {
           <button className="text-black" onClick={closeModal}>Close</button>
         </form>
       </Modal>
-      <h1 className="text-4xl">{name}</h1>
-      <h3 className="text-2xl">{description}</h3>
-      <button type="button" onClick={openModal}>Add Libro</button>
+      <h1 className="text-4xl">{curLista?.name}</h1>
+      <h3 className="text-2xl">{curLista?.description}</h3>
+      {curLista?.created_by === reader ?
+        <button type="button" onClick={openModal}>Add Libro</button>
+        :
+        null
+      }
       {curLibros.map((libro) => (
         <BookCard 
           key={libro.isbn}
           isbn={libro.isbn}
           lid={params.lid}
+          lista_creator={curLista?.created_by}
           title={libro.title} 
           author={libro.author_name}
           reader={reader}

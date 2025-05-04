@@ -4,6 +4,8 @@ import { GetDBParams } from '@/next.config.mjs';
 
 let connectionParams = GetDBParams();
 
+const LIMIT = 5;
+
 export async function GET(req) {
     try {
         const connection = await mysql.createConnection(connectionParams);
@@ -30,7 +32,7 @@ export async function GET(req) {
                 libro_isbn
             ORDER BY
                 average_rating DESC
-            LIMIT 10;
+            LIMIT ${LIMIT};
         `;
         const [topRatedBooksOfTheWeek] = await connection.query(topRatedBooksOfTheWeekQuery);
 
@@ -57,7 +59,7 @@ export async function GET(req) {
                 libro_isbn
             ORDER BY
                 rating_count DESC
-            LIMIT 10;
+            LIMIT ${LIMIT};
         `;
         const [mostReviewedBooksOfTheWeek] = await connection.query(mostReviewedBooksOfTheWeekQuery);
 
@@ -78,7 +80,7 @@ export async function GET(req) {
                 review.reviewer
             ORDER BY
                 review_count DESC
-            LIMIT 10;
+            LIMIT ${LIMIT};
         `;
         const [mostActiveReviewersOfTheWeek] = await connection.query(mostActiveReviewersOfTheWeekQuery);
 
@@ -99,7 +101,7 @@ export async function GET(req) {
                 lista_followings.lista_id
             ORDER BY 
                 following_count DESC
-            LIMIT 10;
+            LIMIT ${LIMIT};
         `;
         const [mostFollowedListas] = await connection.query(mostFollowedListasQuery);
 

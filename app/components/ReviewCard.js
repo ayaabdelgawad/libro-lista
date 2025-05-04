@@ -26,8 +26,8 @@ export default function ReviewCard({rid, isbn, reviewed_at, rating, reviewer, co
     }
 
     async function editReview(formData){
-        const comments = formData.get("comments");
-        const payload = {rating, comments, libro_isbn: isbn, reviewer: reader};
+        const newComments = formData.get("comments");
+        const payload = {rating: newRating, comments: newComments, libro_isbn: isbn, reviewer: reader};
         await fetch(`/api/reviews/${rid}`, {
             method: 'PUT',
             headers: {

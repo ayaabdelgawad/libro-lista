@@ -76,8 +76,8 @@ export default function LibroListaCard({lid, name, description, created_by, book
             </button>
             { created_by === reader ?
                 <div>
-                    <button type="button" className="text-xs" onClick={openModal}>Edit</button>
-                    <button type="button" className="text-xs" onClick={deleteLista}>Delete</button>
+                    <button type="button" className="text-xs" onClick={(event) => {event.stopPropagation(); openModal()}}>Edit</button>
+                    <button type="button" className="text-xs" onClick={(event) => {event.stopPropagation(); deleteLista()}}>Delete</button>
                 </div>
                 :
                 null

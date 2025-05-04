@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 import Rating from '@mui/material/Rating';
 Modal.setAppElement('#root');
 
-export default function BookCard({reader, isbn, lid, title, author, doRefresh}){
+export default function BookCard({reader, isbn, lid, lista_creator, title, author, doRefresh}){
     const router = useRouter();
 
     const [rating, setRating] = useState(1);
@@ -71,7 +71,11 @@ export default function BookCard({reader, isbn, lid, title, author, doRefresh}){
             <div className="flex flex-row">
                 <button type="button" onClick={openModal}>Add Review</button>
                 <button type="button" onClick={() => {router.push(`/reviews/${isbn}`)}}>Read Reviews</button>
-                <button type="button" className="accent" onClick={deleteFromLista}>Delete</button>
+                {reader === lista_creator ? 
+                    <button type="button" className="accent" onClick={deleteFromLista}>Delete</button>
+                    :
+                    null
+                }
             </div>
         </div>
     </div>
