@@ -59,7 +59,7 @@ export default function Page(){
 
     return (
         <div>
-        <form>
+        <form className="flex flex-col">
             <label>Username</label>
             <input 
                 type="text"
