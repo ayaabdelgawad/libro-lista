@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `author` ;
 CREATE TABLE IF NOT EXISTS `author` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
-  `birthdate` DATE NOT NULL,
+  `birthdate` DATE NULL,
   `main_genre` VARCHAR(255) NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
@@ -169,14 +169,17 @@ CREATE VIEW IF NOT EXISTS `libro_y_escritor` AS
   ON libro.author_id = author.id;
 
 -- -----------------------------------------------------
--- Function `get_author_id_by_name`
--- returns id if author exists, NULL otherwise
+-- Function `get_author_id_by_name_and_date`
+-- Returns id if author exists, NULL otherwise
+-- Since name is not unique, we also use some guesswork
+-- if possible, based on the book's publicaiton date 
+-- (can't write a book before you were born)
 -- -----------------------------------------------------
-DROP FUNCTION IF EXISTS `get_author_id_by_name` ;
+DROP FUNCTION IF EXISTS `get_author_id_by_name_and_date` ;
 
 DELIMITER $$
 
-CREATE FUNCTION get_author_id_by_name(p_author_name VARCHAR(255))
+CREATE FUNCTION get_author_id_by_name_and_date(author_name VARCHAR(255), book_pub_date DATE)
 RETURNS INT
 DETERMINISTIC
 READS SQL DATA
@@ -185,7 +188,10 @@ BEGIN
 
     SELECT id INTO v_author_id
     FROM author
-    WHERE name = p_author_name
+    WHERE 
+      name = author_name 
+    AND 
+      (birthdate IS NULL OR birthdate < book_pub_date)
     LIMIT 1;
 
     RETURN v_author_id;
@@ -210,7 +216,7 @@ CREATE PROCEDURE IF NOT EXISTS `insert_libro_con_escritor` (
 BEGIN
     DECLARE v_author_id INT;
 
-    SET v_author_id = get_author_id_by_name(p_author_name);
+    SET v_author_id = get_author_id_by_name(p_author_name, p_publication_date);
 
     -- If the author was not found, insert a new one
     IF v_author_id IS NULL THEN
